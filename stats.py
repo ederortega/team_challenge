@@ -4,6 +4,7 @@ Module for Data capturing and stats generation.
 Define DataCapture class to take data inputs and generate Stats.
 Define Stats class for query stats information.
 """
+from utils import valid_int_input
 
 
 class Stats():
