@@ -29,12 +29,28 @@ Python 3.10.1
 * **stats.py** 
   Solution entry point, answer solution question.
 
+* **utils.py**
+  Utils functions.
+
 * **test_stats.py**
   Test cases for stats.py classes.
 
-### Run solution
+### Run test
 
 python -m unittest test_stats
+
+### Run solution
+
+python stats.py
+
+### Instructions
+
+- Type the number of data to read
+- Type each data input
+- Type value to test less option
+- Type value to test greater option
+- Type start and end values to test between option
+- See stats resume
 
 
 ## Author
