@@ -1,6 +1,7 @@
 from unittest import TestCase
+from unittest.mock import patch
 
-from stats import DataCapture, Stats
+from stats import DataCapture, Stats, Program
 
 
 class StatsTestCase(TestCase):
@@ -50,3 +51,22 @@ class StatsTestCase(TestCase):
         stats = self.data_capture.build_stats()
         with self.assertRaises(ValueError) as context:
             self.assertEqual(stats.greater('a'), 2)
+
+
+class ProgramTestCase(TestCase):
+
+    @patch('builtins.input')
+    def test_program_run_with_all_int_values(self, mock_input):
+        input_values = (5, 3, 9, 3, 4, 6, 4, 4, 3, 6)
+        mock_input.side_effect = input_values
+        program = Program()
+        program.run()
+        self.assertEqual(mock_input.call_count, len(input_values))
+
+    @patch('builtins.input')
+    def test_program_run_with_one_wrong_value_raise_error(self, mock_input):
+        input_values = ('a', 3, 9, 3, 4, 6, 4, 4, 3, 6)
+        mock_input.side_effect = input_values
+        program = Program()
+        program.run()
+        mock_input.assert_called_once()
