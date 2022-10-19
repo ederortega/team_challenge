@@ -38,6 +38,7 @@ Python 3.10.1
 ### Run test
 
 python -m unittest test_stats
+python -m unittest test_utils
 
 ### Run solution
 
