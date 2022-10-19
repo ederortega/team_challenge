@@ -5,10 +5,10 @@ Define DataCapture class to take data inputs and generate Stats.
 Define Stats class for query stats information.
 """
 from multiprocessing.sharedctypes import Value
-from utils import valid_int_input
+from utils import NumericInputValidatorMixin
 
 
-class Stats():
+class Stats(NumericInputValidatorMixin):
     """Define the methods to query stats information from data."""
     
     COUNT = 'count'
@@ -27,6 +27,7 @@ class Stats():
         Returns:
             int: number of elements less than value
         """
+        value = self.valid_int_input(value)
         return self.dict_stats[value][self.CUMULATIVE]
 
     def greater(self, value: int) -> int:
@@ -38,6 +39,7 @@ class Stats():
         Returns:
             int: number of elements greater than value
         """
+        value = self.valid_int_input(value)
         return self.num_elements - self.dict_stats[value][self.CUMULATIVE] - 1
 
     def between(self, start: int, end: int) -> int:
@@ -50,10 +52,12 @@ class Stats():
         Returns:
             int: number of elements
         """
+        start = self.valid_int_input(start)
+        end = self.valid_int_input(end)
         return self.dict_stats[end][self.CUMULATIVE] - self.dict_stats[start][self.CUMULATIVE] + 1
 
 
-class DataCapture():
+class DataCapture(NumericInputValidatorMixin):
     """Class to take data inputs and generate Stats.
     
     Define the dict structure for further stats generation.
@@ -68,6 +72,7 @@ class DataCapture():
         Args:
             value (int): value to add.
         """
+        value = self.valid_int_input(value)
         self.elements[value] = self.elements.get(value, 0) + 1
 
     def build_stats(self) -> Stats:
@@ -86,25 +91,31 @@ class DataCapture():
             cumulative += self.elements[key]
         return Stats(stat_structure, cumulative)
 
+
+class Program(NumericInputValidatorMixin):
+    def run(self):
+        try:
+            data_capture = DataCapture()
+            number_of_data = self.valid_int_input(input('Please type the number of data to read: '))
+            for index in range(number_of_data):
+                data = self.valid_int_input(input(f'type data {index}: '))
+                data_capture.add(int(data))
+            
+            stats = data_capture.build_stats()
+            less = self.valid_int_input(input('Type value to test less option: '))
+            greater = self.valid_int_input(input('Type value to test greate option: '))
+            start = self.valid_int_input(input('Type start value to test between option: '))
+            end = self.valid_int_input(input('Type end value to test between option: '))
+            print(' Stats resume '.center(100, '='))
+            print('_' * 100)
+            print(f'Less: result ({stats.less(less)}) with input ({less})')
+            print(f'Greater: result ({stats.greater(greater)}) with input ({greater})')
+            print(f'Between: result ({stats.between(start, end)}) with input ({start}, {end})')
+            print('_' * 100)
+        except ValueError as e:
+            print(e)
+
+
 if __name__ == '__main__':
-    try:
-        
-        data_capture = DataCapture()
-        number_of_data = valid_int_input(input('Please type the number of data to read: '))
-        for index in range(number_of_data):
-            data = valid_int_input(input(f'type data {index}: '))
-            data_capture.add(int(data))
-        
-        stats = data_capture.build_stats()
-        less = valid_int_input(input('Type value to test less option: '))
-        greater = valid_int_input(input('Type value to test greate option: '))
-        start = valid_int_input(input('Type start value to test between option: '))
-        end = valid_int_input(input('Type end value to test between option: '))
-        print(' Stats resume '.center(100, '='))
-        print('_' * 100)
-        print(f'Less: result ({stats.less(less)}) with input ({less})')
-        print(f'Greater: result ({stats.greater(greater)}) with input ({greater})')
-        print(f'Between: result ({stats.between(start, end)}) with input ({start}, {end})')
-        print('_' * 100)
-    except ValueError as e:
-        print(e)
+    program = Program()
+    program.run()
