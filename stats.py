@@ -54,6 +54,10 @@ class Stats(NumericInputValidatorMixin):
         """
         start = self.valid_int_input(start)
         end = self.valid_int_input(end)
+        if start < 0 or end < 0:
+            raise ValueError('Please type a positive int value!')
+        if start > end:
+            raise ValueError('Start value must be grater than end value!')
         return self.dict_stats[end][self.CUMULATIVE] - self.dict_stats[start][self.CUMULATIVE] + 1
 
 
