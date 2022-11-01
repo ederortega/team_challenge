@@ -4,6 +4,28 @@ from unittest.mock import patch
 from stats import DataCapture, Stats, Program
 
 
+class DataCaptureTestCase(TestCase):
+
+    def test_add_value_to_datacapture_with_two_values(self):
+        data_capture = DataCapture()
+        data_capture.add(1)
+        data_capture.add(2)
+        self.assertIn(1, data_capture.elements)
+        self.assertIn(2, data_capture.elements)
+
+    def test_add_value_to_datacapture_with_wrong_input_value_raise_valueerror(self):
+        data_capture = DataCapture()
+        with self.assertRaises(ValueError) as context:
+            data_capture.add('a')
+
+    def test_data_capture_build_stats_returns_stats(self):
+        data_capture = DataCapture()
+        data_capture.add(3)
+        data_capture.add(9)
+        stats = data_capture.build_stats()
+        self.assertIsInstance(stats, Stats)
+
+
 class StatsTestCase(TestCase):
 
     def setUp(self):
@@ -13,15 +35,6 @@ class StatsTestCase(TestCase):
         self.data_capture.add(3)
         self.data_capture.add(4)
         self.data_capture.add(6)
-
-    def test_add_value_to_datacapture_with_wrong_input_value_raise_valueerror(self):
-        data_capture = DataCapture()
-        with self.assertRaises(ValueError) as context:
-            data_capture.add('a')
-
-    def test_data_capture_build_stats_returns_stats(self):
-        stats = self.data_capture.build_stats()
-        self.assertIsInstance(stats, Stats)
 
     def test_stats_less_return_right_value(self):
         stats = self.data_capture.build_stats()
@@ -42,6 +55,18 @@ class StatsTestCase(TestCase):
             self.assertEqual(stats.between('a', 6), 4)
         with self.assertRaises(ValueError) as context:
             self.assertEqual(stats.between(3, 'a'), 4)
+
+    def test_stats_between_raise_error_with_negative_values(self):
+        stats = self.data_capture.build_stats()
+        with self.assertRaises(ValueError) as context:
+            self.assertEqual(stats.between(-1, 6), 4)
+        with self.assertRaises(ValueError) as context:
+            self.assertEqual(stats.between(3, -6), 4)
+
+    def test_stats_between_raise_error_with_start_value_greater_than_end_value(self):
+        stats = self.data_capture.build_stats()
+        with self.assertRaises(ValueError) as context:
+            self.assertEqual(stats.between(6, 3), 4)
 
     def test_stats_greater_return_right_value(self):
         stats = self.data_capture.build_stats()
